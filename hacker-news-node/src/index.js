@@ -1,37 +1,27 @@
-const find = require('lodash/find');
-
+const { Primsa } = require('prisma-binding');
 const { GraphQLServer } = require('graphql-yoga');
+
+const find = require('lodash/find');
 const { handleLinkUpdate } = require('./helpers');
-
-let links = [
-  {
-    id: 'link-0',
-    url: 'howtographql.com',
-    description: 'Fullstack tutorial for GraphQL'
-  }
-];
-
-let linkCount = links.length;
 
 const resolvers = {
   Query: {
     info: () => 'This is a Hacker News GraphQL API',
-    feed: () => links,
+    feed: (root, args, context, info) => context.db.query.links({}, info),
     link: (root, { id }) => find(links, { id })
   },
 
   Mutation: {
-    post: (root, { description, url }) => {
-      const link = {
-        id: `link-${linkCount++}`,
-        description,
-        url
-      };
-
-      links.push(link);
-
-      return link;
-    },
+    post: (root, args, context, info) =>
+      context.db.mutation.createLink(
+        {
+          data: {
+            url: args.url,
+            description: args.description
+          }
+        },
+        info
+      ),
 
     updateLink: (root, { id, description, url }) => {
       links = links.map(handleLinkUpdate(id));
@@ -57,7 +47,16 @@ const resolvers = {
 
 const server = new GraphQLServer({
   typeDefs: './src/schema.graphql',
-  resolvers
+  resolvers,
+  context: (req) => ({
+    ...req,
+    db: new Prisma({
+      typeDefs: 'src/generated/prisma.graphql',
+      endpoint: 'https://us1.prisma.sh/public-nickelfairy-857/hacker-news-node/dev',
+      secret: 'mysecret123',
+      debug: true
+    })
+  })
 });
 
 server.start(() => console.log('Server is running on http://localhost:4000'));
