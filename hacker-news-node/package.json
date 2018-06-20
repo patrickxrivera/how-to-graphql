@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "graphql-yoga": "^1.14.10",
+    "lodash": "^4.17.10",
     "nodemon": "^1.17.5"
   }
 }

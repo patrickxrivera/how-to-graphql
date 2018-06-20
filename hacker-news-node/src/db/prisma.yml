@@ -1,0 +1,9 @@
+service: hacker-news-node
+
+stage: dev
+
+datamodel: datamodel.graphql
+
+secret: mysecret123
+
+cluster: public-nickelfairy-857/prisma-us1
