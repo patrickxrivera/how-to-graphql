@@ -11,6 +11,15 @@ const isLoading = queryState('loading');
 const isError = queryState('error');
 
 class LinkList extends Component {
+  updateCacheAfterVote = (store, createVote, linkId) => {
+    const data = store.readQuery({ query: FEED_QUERY });
+
+    const votedLink = data.feed.links.find((link) => link.id === linkId);
+    votedLink.votes = createVote.link.votes;
+
+    store.writeQuery({ query: FEED_QUERY, data });
+  };
+
   render() {
     const { feedQuery } = this.props;
 
@@ -21,14 +30,16 @@ class LinkList extends Component {
         return <div>Error</div>;
       default:
         const linksToRender = feedQuery.feed.links;
-        return <div>{linksToRender.map(renderLink)}</div>;
+        return <div>{linksToRender.map(renderLink(this.updateCacheAfterVote))}</div>;
     }
   }
 }
 
-const renderLink = (link) => <Link key={link.id} link={link} />;
+const renderLink = (updateCacheAfterVote) => (link, idx) => (
+  <Link key={link.id} updateStoreAfterVote={updateCacheAfterVote} idx={idx} link={link} />
+);
 
-const FEED_QUERY = gql`
+export const FEED_QUERY = gql`
   query FeedQuery {
     feed {
       links {
@@ -36,6 +47,16 @@ const FEED_QUERY = gql`
         description
         url
         createdAt
+        postedBy {
+          id
+          name
+        }
+        votes {
+          id
+          user {
+            id
+          }
+        }
       }
     }
   }

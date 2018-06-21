@@ -20,8 +20,7 @@ const server = new GraphQLServer({
     db: new Prisma({
       typeDefs: 'src/generated/prisma.graphql',
       endpoint: 'https://us1.prisma.sh/public-coraltiger-233/hackernews-graphql-js/dev',
-      secret: 'mysecret123',
-      debug: true
+      secret: 'mysecret123'
     })
   })
 });
