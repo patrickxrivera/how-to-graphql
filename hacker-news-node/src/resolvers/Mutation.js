@@ -48,7 +48,7 @@ const login = async (parent, args, context, info) => {
 
 const post = (parent, args, context, info) => {
   const userId = getUserId(context);
-  console.log({ userId });
+
   return context.db.mutation.createLink(
     {
       data: {

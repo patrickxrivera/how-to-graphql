@@ -1,16 +1,18 @@
 const { Prisma } = require('prisma-binding');
 const { GraphQLServer } = require('graphql-yoga');
 
-const find = require('lodash/find');
 const Query = require('./resolvers/Query');
 const Mutation = require('./resolvers/Mutation');
 const AuthPayload = require('./resolvers/AuthPayload');
+const Subscription = require('./resolvers/Subscription');
+const find = require('lodash/find');
 const { handleLinkUpdate } = require('./helpers');
 
 const resolvers = {
   Query,
   Mutation,
-  AuthPayload
+  AuthPayload,
+  Subscription
 };
 
 const server = new GraphQLServer({
